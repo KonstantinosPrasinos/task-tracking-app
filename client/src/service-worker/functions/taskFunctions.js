@@ -46,7 +46,7 @@ export const getTasksFromDB = async () => {
         forDeletion: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        mustSync: true,
+        mustSync: false,
         isNew: true,
       };
 
