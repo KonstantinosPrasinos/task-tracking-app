@@ -10,9 +10,6 @@ import { MiniPagesContext } from "@/context/MiniPagesContext";
 import { useGetGroups } from "@/hooks/get-hooks/useGetGroups";
 import IconButton from "@/components/buttons/IconButton/IconButton";
 import { useScreenSize } from "@/hooks/useScreenSize";
-import ToggleButton from "@/components/buttons/ToggleButton/ToggleButton.jsx";
-import InputWrapper from "@/components/utilities/InputWrapper/InputWrapper.jsx";
-import Divider from "@/components/utilities/Divider/Divider.jsx";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -280,7 +277,7 @@ const BigScreenFilters = ({
         >
           No category
         </Chip>
-        <Divider />
+        <div className={styles.filterLabel}>Categories:</div>
         <CategoryChips
           categories={categories}
           subCategories={subCategories}
@@ -335,6 +332,8 @@ const SearchScreen = ({
   toggleVisibility,
   searchFilter,
   setSearchFilter,
+  showNonCurrentTasks,
+  setShowNonCurrentTasks,
 }) => {
   const miniPagesContext = useContext(MiniPagesContext);
 
@@ -379,8 +378,16 @@ const SearchScreen = ({
           animate={{ opacity: 1 }}
         >
           <div className={styles.filterContainer}>
-            <div className={styles.filterLabel}>Categories:</div>
             <div className={styles.categoryFilters}>
+              <Chip
+                value={true}
+                hasShadow={true}
+                size={"small"}
+                selected={showNonCurrentTasks}
+                setSelected={() => setShowNonCurrentTasks(!showNonCurrentTasks)}
+              >
+                Show non-current tasks
+              </Chip>
               <Chip
                 value={-1}
                 setSelected={() => toggleNoCategory()}
@@ -389,10 +396,12 @@ const SearchScreen = ({
                     ? -1
                     : null
                 }
+                hasShadow={true}
                 size={"small"}
               >
                 No category
               </Chip>
+              <div className={styles.filterLabel}>Categories:</div>
               <CategoryChips
                 categories={categories}
                 subCategories={subCategories}
@@ -587,6 +596,8 @@ const TaskList = ({
               toggleVisibility={toggleSearchVisibility}
               searchFilter={searchFilter}
               setSearchFilter={setSearchFilter}
+              showNonCurrentTasks={showNonCurrentTasks}
+              setShowNonCurrentTasks={setShowNonCurrentTasks}
             />
           )}
         </AnimatePresence>
