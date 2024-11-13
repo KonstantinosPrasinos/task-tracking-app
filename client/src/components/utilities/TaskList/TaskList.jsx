@@ -381,7 +381,6 @@ const SearchScreen = ({
             <div className={styles.categoryFilters}>
               <Chip
                 value={true}
-                hasShadow={true}
                 size={"small"}
                 selected={showNonCurrentTasks}
                 setSelected={() => setShowNonCurrentTasks(!showNonCurrentTasks)}
@@ -396,7 +395,6 @@ const SearchScreen = ({
                     ? -1
                     : null
                 }
-                hasShadow={true}
                 size={"small"}
               >
                 No category
