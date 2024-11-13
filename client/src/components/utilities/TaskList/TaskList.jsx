@@ -4,11 +4,16 @@ import { AnimatePresence, motion, useAnimate } from "framer-motion";
 import Task from "@/components/indicators/Task/Task.jsx";
 import Chip from "@/components/buttons/Chip/Chip";
 import { useGetCategories } from "@/hooks/get-hooks/useGetCategories";
-import { TbChevronCompactDown, TbPlus, TbSearch, TbX } from "react-icons/tb";
+import {
+  TbChevronCompactDown,
+  TbEraser,
+  TbPlus,
+  TbSearch,
+  TbX,
+} from "react-icons/tb";
 import Button from "@/components/buttons/Button/Button";
 import { MiniPagesContext } from "@/context/MiniPagesContext";
 import { useGetGroups } from "@/hooks/get-hooks/useGetGroups";
-import IconButton from "@/components/buttons/IconButton/IconButton";
 import { useScreenSize } from "@/hooks/useScreenSize";
 
 const variants = {
@@ -323,7 +328,6 @@ const SearchBar = ({ isStandalone = false, searchFilter, setSearchFilter }) => {
 };
 
 const SearchScreen = ({
-  searchExpanded,
   searchBarRef,
   categoryFilter,
   setCategoryFilter,
@@ -336,6 +340,7 @@ const SearchScreen = ({
   setShowNonCurrentTasks,
 }) => {
   const miniPagesContext = useContext(MiniPagesContext);
+  const [searchFocused, setSearchFocused] = useState();
 
   const toggleNoCategory = () => {
     if (categoryFilter.find((category) => category._id === "-1")) {
@@ -358,77 +363,86 @@ const SearchScreen = ({
     });
   };
 
+  const handleSearchVarButtonClick = () => {
+    if (searchFilter.length === 0) {
+      toggleVisibility();
+    } else {
+      setSearchFilter("");
+    }
+  };
   return (
-    <motion.div
-      className={`${styles.searchContainer} ${
-        searchExpanded ? styles.isExpanded : ""
-      }`}
-      exit={{ opacity: 0 }}
-    >
-      <div ref={searchBarRef} className={styles.searchBar}>
+    <>
+      {searchFilter.length === 0 && (
+        <motion.div
+          className={`${styles.searchContainer} ${searchFilter.length !== 0 ? styles.searching : ""}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <div className={styles.categoryFilters}>
+            <div className={styles.filterLabel}>Filters:</div>
+            <Chip
+              value={true}
+              size={"small"}
+              selected={showNonCurrentTasks}
+              setSelected={() => setShowNonCurrentTasks(!showNonCurrentTasks)}
+            >
+              Show non-current tasks
+            </Chip>
+            <Chip
+              value={-1}
+              setSelected={() => toggleNoCategory()}
+              selected={
+                categoryFilter.find((category) => category._id === "-1")
+                  ? -1
+                  : null
+              }
+              size={"small"}
+            >
+              No category
+            </Chip>
+            <div className={styles.filterLabel}>Categories:</div>
+            <CategoryChips
+              categories={categories}
+              subCategories={subCategories}
+              categoryFilter={categoryFilter}
+              setCategoryFilter={setCategoryFilter}
+              expandDirection={"horizontal"}
+              toggleSearchVisibility={toggleVisibility}
+            />
+            <Button
+              onClick={handleNewClick}
+              filled={false}
+              type={"square"}
+              size="small"
+            >
+              <span className="Horizontal-Flex-Container">
+                Add new
+                <TbPlus />
+              </span>
+            </Button>
+          </div>
+        </motion.div>
+      )}
+      <motion.div
+        ref={searchBarRef}
+        className={styles.searchBar}
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 100 }}
+      >
         <SearchBar
           searchFilter={searchFilter}
           setSearchFilter={setSearchFilter}
         />
-      </div>
-      {searchExpanded && (
-        <motion.div
-          className={styles.searchScreenBody}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+        <button
+          className={styles.closeSearchBarButton}
+          onClick={handleSearchVarButtonClick}
         >
-          <div className={styles.filterContainer}>
-            <div className={styles.categoryFilters}>
-              <Chip
-                value={true}
-                hasShadow={true}
-                size={"small"}
-                selected={showNonCurrentTasks}
-                setSelected={() => setShowNonCurrentTasks(!showNonCurrentTasks)}
-              >
-                Show non-current tasks
-              </Chip>
-              <Chip
-                value={-1}
-                setSelected={() => toggleNoCategory()}
-                selected={
-                  categoryFilter.find((category) => category._id === "-1")
-                    ? -1
-                    : null
-                }
-                hasShadow={true}
-                size={"small"}
-              >
-                No category
-              </Chip>
-              <div className={styles.filterLabel}>Categories:</div>
-              <CategoryChips
-                categories={categories}
-                subCategories={subCategories}
-                categoryFilter={categoryFilter}
-                setCategoryFilter={setCategoryFilter}
-                expandDirection={"horizontal"}
-                toggleSearchVisibility={toggleVisibility}
-              />
-              <Button
-                onClick={handleNewClick}
-                filled={false}
-                type={"square"}
-                size="small"
-              >
-                <span className="Horizontal-Flex-Container">
-                  Add new
-                  <TbPlus />
-                </span>
-              </Button>
-            </div>
-          </div>
-          <IconButton size="large" onClick={toggleVisibility}>
-            <TbX />
-          </IconButton>
-        </motion.div>
-      )}
-    </motion.div>
+          {searchFilter.length === 0 ? <TbX /> : <TbEraser />}
+        </button>
+      </motion.div>
+    </>
   );
 };
 
@@ -447,7 +461,6 @@ const TaskList = ({
   const dragStartPosition = useRef();
   const [searchBarRef, animateSearchBar] = useAnimate();
   const [searchVisible, setSearchVisible] = useState(false);
-  const [searchExpanded, setSearchExpanded] = useState(false);
   const { screenSize } = useScreenSize();
   const [searchFilter, setSearchFilter] = useState("");
 
@@ -523,7 +536,7 @@ const TaskList = ({
 
       if (
         searchBarRef.current &&
-        !searchExpanded &&
+        // !searchExpanded &&
         dragStartPosition.current
       ) {
         if (
@@ -537,13 +550,13 @@ const TaskList = ({
           searchBarRef.current.style.opacity = animationPercentage / 2;
           searchBarRef.current.style.top = `${animationPercentage * 3 - 2}em`;
         } else {
-          if (!searchExpanded) {
-            setSearchExpanded(true);
-            animateSearchBar(searchBarRef.current, {
-              opacity: 1,
-              top: "1em",
-            });
-          }
+          // if (!searchExpanded) {
+          //   setSearchExpanded(true);
+          //   animateSearchBar(searchBarRef.current, {
+          //     opacity: 1,
+          //     top: "1em",
+          //   });
+          // }
         }
       }
     }
@@ -551,28 +564,22 @@ const TaskList = ({
 
   const handleTouchEnd = () => {
     dragStartPosition.current = null;
-    if (!searchExpanded && searchBarRef.current) {
-      animateSearchBar(
-        searchBarRef.current,
-        {
-          opacity: 0,
-          top: "-2em",
-        },
-        {
-          onComplete: () => toggleSearchVisibility(),
-        },
-      );
-    }
+    // if (!searchExpanded && searchBarRef.current) {
+    //   animateSearchBar(
+    //     searchBarRef.current,
+    //     {
+    //       opacity: 0,
+    //       top: "-2em",
+    //     },
+    //     {
+    //       onComplete: () => toggleSearchVisibility(),
+    //     },
+    //   );
+    // }
   };
 
   const toggleSearchVisibility = () => {
-    if (searchVisible) {
-      setSearchVisible(false);
-      setSearchExpanded(false);
-    } else {
-      setSearchVisible(true);
-      setSearchExpanded(true);
-    }
+    setSearchVisible(!searchVisible);
   };
 
   return (
@@ -588,7 +595,6 @@ const TaskList = ({
           {searchVisible && (
             <SearchScreen
               searchBarRef={searchBarRef}
-              searchExpanded={searchExpanded}
               categoryFilter={categoryFilter}
               setCategoryFilter={setCategoryFilter}
               categories={categories}
