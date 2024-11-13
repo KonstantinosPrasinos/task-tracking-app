@@ -65,19 +65,6 @@ const NavBar = () => {
         </div>
         <div className={styles.item}>
           <IconButton
-            onClick={() => {
-              navigate("/list", { replace: true });
-            }}
-            selected={selected === "list"}
-          >
-            <TbList />
-          </IconButton>
-          {selected === "list" && (
-            <motion.div className={styles.selectedBar} layoutId={"underline"} />
-          )}
-        </div>
-        <div className={styles.item}>
-          <IconButton
             onClick={() => navigate("/settings", { replace: true })}
             selected={selected === "settings"}
           >

@@ -6,7 +6,8 @@ import { useScreenSize } from "../../hooks/useScreenSize";
 import TaskList from "@/components/utilities/TaskList/TaskList.jsx";
 
 const Home = () => {
-  const { isLoading, data } = useRenderTasks(true);
+  const { isLoading, data, showNonCurrentTasks, setShowNonCurrentTasks } =
+    useRenderTasks();
 
   const { screenSize } = useScreenSize();
 
@@ -16,7 +17,12 @@ const Home = () => {
 
   return (
     <motion.div className={`${styles.container}`}>
-      <TaskList tasks={data} usesTime={true} />
+      <TaskList
+        tasks={data}
+        usesTime={true}
+        showNonCurrentTasks={showNonCurrentTasks}
+        setShowNonCurrentTasks={setShowNonCurrentTasks}
+      />
       {screenSize === "big" && (
         <div className={`Stack-Container ${styles.rightSide}`}></div>
       )}
