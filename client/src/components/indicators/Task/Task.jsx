@@ -137,7 +137,7 @@ const Task = memo(
                   key={task._id}
                   className={styles.task}
                   onClick={() => handleTaskClick(task._id)}
-                  exit={{ opacity: 0, height: 0, margin: 0 }}
+                  exit={{ opacity: 0, height: 0, padding: 0 }}
                 >
                   <div className={styles.detailsList}>
                     <div className={styles.titleContainer}>{task.title}</div>
