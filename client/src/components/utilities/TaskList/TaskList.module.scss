@@ -181,38 +181,59 @@
 }
 
 .searchContainer {
+  @extend .Stack-Container;
+
+  justify-content: space-between;
+
   width: 100%;
-  height: 0;
   position: fixed;
   top: 0;
-  padding-top: 5em;
-  padding-bottom: 1em;
   box-sizing: border-box;
-  
-  display: flex;
-  justify-content: center;
   z-index: 6;
 
-  background-color: transparent;
-  transition: background-color 0.2s ease-in-out;
+  background-color: var(--background-color);
+  height: 100%;
 
-  &.isExpanded {
-    background-color: var(--background-color);
-    height: 100%;
+  &.searching {
+    background-color: transparent;
+    transition: background-color 0.2s ease-in-out;
+
+    & > .categoryFilters {
+      opacity: 0;
+      pointer-events: none;
+    }
   }
 }
 
 .searchBar {
   @extend .Horizontal-Flex-Container;
   font-size: v.$font-xl;
-  width: 70%;
+  width: 100%;
   
   height: min-content;
-  position: absolute;
 
-  // To animate later (maximum drag values)
-  opacity: 0.99;
-  top: 0.99em;
+  background-color: var(--background-color);
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 7;
+
+  position: fixed;
+  bottom: 0;
+}
+
+.closeSearchBarButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: var(--surface-color);
+  border: v.$base-border;
+  border-radius: v.$button-border-radius;
+  padding: 10px;
+  box-shadow: v.$elevation-1;
+  font-size: v.$font-l;
+
+  color: var(--on-surface-color);
 }
 
 .searchInput {
@@ -271,4 +292,21 @@
   flex-direction: column;
   flex-wrap: wrap;
   gap: 10px;
+
+  transition: 0.2s opacity ease-in-out 0.2s;
+  transition-delay: 0.2s;
+
+  padding: 20px;
+}
+
+@keyframes appearAnimation {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+.searchEraser {
+  height: 1em;
+  font-size: inherit;
+
+  animation: appearAnimation 0.2s ease-out;
 }
