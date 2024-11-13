@@ -323,6 +323,9 @@ const makeSyncRequest = async (requestData) => {
   });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      await messageClient(self, "UNAUTHORIZED");
+    }
     self.mustSync = true;
 
     const data = await response.json();
@@ -605,7 +608,6 @@ export const handleSync = async () => {
     await handleCleanup();
 
     const syncData = await prepareSyncData();
-
     if (!syncData.shouldSync) {
       self.mustSync = false;
       self.isSyncing = false;

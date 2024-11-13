@@ -148,6 +148,9 @@ export const handleAllEntriesGetRequest = async (request, sw) => {
   });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      await messageClient(sw, "UNAUTHORIZED");
+    }
     self.mustSync = true;
     self.requestEventQueue.push(request);
 
