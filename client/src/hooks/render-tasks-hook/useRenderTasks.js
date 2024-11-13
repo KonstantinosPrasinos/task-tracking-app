@@ -83,16 +83,17 @@ const checkTaskCompleted = (task, entry) => {
   }
 };
 
-export function useRenderTasks(usesTime = false) {
+export function useRenderTasks() {
+  // State hooks
+  const [showNonCurrentTasks, setShowNonCurrentTasks] = useState(false);
   const [shouldReRender, setShouldReRender] = useState(false); // Flip this when we want tasks to re-render
+
+  // Data fetching hooks
   const {
     isLoading: tasksLoading,
     isError: tasksError,
     data: tasks,
   } = useGetTasks();
-  // const tasksLoading = false;
-  // const tasksError = false;
-  // const tasks = [];
   const {
     isLoading: groupsLoading,
     isError: groupsError,
@@ -106,6 +107,7 @@ export function useRenderTasks(usesTime = false) {
   const { data: entries, isLoading: entriesLoading } =
     useGetTaskCurrentEntry(tasks);
 
+  // Functional hooks
   const addCategoriesToArray = useCallback(
     (groupedTasks) => {
       /*
@@ -128,10 +130,9 @@ export function useRenderTasks(usesTime = false) {
 
           // If current entry doesn't exist, it's loading so skip it
           if (!taskCurrentEntry) return false;
-          if (usesTime && checkTaskCompleted(task, taskCurrentEntry))
-            return false;
-
-          return true;
+          return !(
+            !showNonCurrentTasks && checkTaskCompleted(task, taskCurrentEntry)
+          );
         });
 
         if (!localTasks.length) return;
@@ -152,7 +153,7 @@ export function useRenderTasks(usesTime = false) {
         if (categoryOnlyTasks.length) {
           // Check if any of the tasks are not completed
           const existsNotCompletedTask =
-            !usesTime ||
+            !!showNonCurrentTasks ||
             categoryOnlyTasks.some((task) => {
               const taskCurrentEntry = entries.find(
                 (entry) => entry?._id === task.currentEntryId,
@@ -163,7 +164,7 @@ export function useRenderTasks(usesTime = false) {
 
           if (existsNotCompletedTask) {
             if (
-              !usesTime ||
+              !!showNonCurrentTasks ||
               isNaN(category.repeatRate?.number) ||
               checkTime({
                 repeatRate: category.repeatRate,
@@ -191,7 +192,7 @@ export function useRenderTasks(usesTime = false) {
           if (localGroupTasks.length) {
             // Check if any of the tasks are not completed
             const existsNotCompletedTask =
-              !usesTime ||
+              !!showNonCurrentTasks ||
               localGroupTasks.some((task) => {
                 const taskCurrentEntry = entries.find(
                   (entry) => entry?._id === task.currentEntryId,
@@ -211,7 +212,7 @@ export function useRenderTasks(usesTime = false) {
 
             if (existsNotCompletedTask) {
               if (
-                !usesTime ||
+                !!showNonCurrentTasks ||
                 isNaN(category.repeatRate?.number) ||
                 checkTime({
                   repeatRate: { ...category.repeatRate, ...group.repeatRate },
@@ -249,7 +250,8 @@ export function useRenderTasks(usesTime = false) {
 
         // If current entry doesn't exist, it's loading so skip it
         if (!taskCurrentEntry) return;
-        if (usesTime && checkTaskCompleted(task, taskCurrentEntry)) return;
+        if (!showNonCurrentTasks && checkTaskCompleted(task, taskCurrentEntry))
+          return;
 
         // Check if the task should be rendered at the current date/time:
         // Check if the task repeats
@@ -261,7 +263,7 @@ export function useRenderTasks(usesTime = false) {
             );
 
             if (!category?.repeatRate?.number) {
-              if (usesTime) {
+              if (!showNonCurrentTasks) {
                 if (checkTime(task)) {
                   groupedTasks.push(task);
                 }
@@ -270,7 +272,7 @@ export function useRenderTasks(usesTime = false) {
               }
             }
           } else {
-            if (usesTime) {
+            if (!showNonCurrentTasks) {
               if (checkTime(task)) {
                 groupedTasks.push(task);
               }
@@ -334,5 +336,7 @@ export function useRenderTasks(usesTime = false) {
     isLoading: tasksLoading || groupsLoading,
     isError: groupsError || tasksError,
     data,
+    showNonCurrentTasks,
+    setShowNonCurrentTasks,
   };
 }

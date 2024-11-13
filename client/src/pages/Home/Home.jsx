@@ -4,11 +4,10 @@ import { motion } from "framer-motion";
 import LoadingIndicator from "../../components/indicators/LoadingIndicator/LoadingIndicator";
 import { useScreenSize } from "../../hooks/useScreenSize";
 import TaskList from "@/components/utilities/TaskList/TaskList.jsx";
-import { useState } from "react";
 
 const Home = () => {
-  const [showNonCurrentTasks, setShowNonCurrentTasks] = useState(false);
-  const { isLoading, data } = useRenderTasks(!showNonCurrentTasks);
+  const { isLoading, data, showNonCurrentTasks, setShowNonCurrentTasks } =
+    useRenderTasks();
 
   const { screenSize } = useScreenSize();
 
