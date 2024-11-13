@@ -4,9 +4,11 @@ import { motion } from "framer-motion";
 import LoadingIndicator from "../../components/indicators/LoadingIndicator/LoadingIndicator";
 import { useScreenSize } from "../../hooks/useScreenSize";
 import TaskList from "@/components/utilities/TaskList/TaskList.jsx";
+import { useState } from "react";
 
 const Home = () => {
-  const { isLoading, data } = useRenderTasks(true);
+  const [showNonCurrentTasks, setShowNonCurrentTasks] = useState(false);
+  const { isLoading, data } = useRenderTasks(!showNonCurrentTasks);
 
   const { screenSize } = useScreenSize();
 
@@ -16,7 +18,12 @@ const Home = () => {
 
   return (
     <motion.div className={`${styles.container}`}>
-      <TaskList tasks={data} usesTime={true} />
+      <TaskList
+        tasks={data}
+        usesTime={true}
+        showNonCurrentTasks={showNonCurrentTasks}
+        setShowNonCurrentTasks={setShowNonCurrentTasks}
+      />
       {screenSize === "big" && (
         <div className={`Stack-Container ${styles.rightSide}`}></div>
       )}

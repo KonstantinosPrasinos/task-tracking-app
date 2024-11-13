@@ -10,6 +10,9 @@ import { MiniPagesContext } from "@/context/MiniPagesContext";
 import { useGetGroups } from "@/hooks/get-hooks/useGetGroups";
 import IconButton from "@/components/buttons/IconButton/IconButton";
 import { useScreenSize } from "@/hooks/useScreenSize";
+import ToggleButton from "@/components/buttons/ToggleButton/ToggleButton.jsx";
+import InputWrapper from "@/components/utilities/InputWrapper/InputWrapper.jsx";
+import Divider from "@/components/utilities/Divider/Divider.jsx";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -224,6 +227,8 @@ const BigScreenFilters = ({
   setCategoryFilter,
   searchFilter,
   setSearchFilter,
+  showNonCurrentTasks,
+  setShowNonCurrentTasks,
 }) => {
   const miniPagesContext = useContext(MiniPagesContext);
 
@@ -256,6 +261,15 @@ const BigScreenFilters = ({
           setSearchFilter={setSearchFilter}
         />
         <Chip
+          value={true}
+          hasShadow={true}
+          size={"small"}
+          selected={showNonCurrentTasks}
+          setSelected={() => setShowNonCurrentTasks(!showNonCurrentTasks)}
+        >
+          Show non-current tasks
+        </Chip>
+        <Chip
           value={-1}
           setSelected={() => toggleNoCategory()}
           selected={
@@ -266,6 +280,7 @@ const BigScreenFilters = ({
         >
           No category
         </Chip>
+        <Divider />
         <CategoryChips
           categories={categories}
           subCategories={subCategories}
@@ -410,7 +425,12 @@ const SearchScreen = ({
 
 const maxDragDistance = 150;
 
-const TaskList = ({ tasks = [], usesTime = false }) => {
+const TaskList = ({
+  tasks = [],
+  usesTime = false,
+  showNonCurrentTasks = false,
+  setShowNonCurrentTasks = () => {},
+}) => {
   const [categoryFilter, setCategoryFilter] = useState([]);
   const { data: categories } = useGetCategories();
   const { data: subCategories } = useGetGroups();
@@ -631,6 +651,8 @@ const TaskList = ({ tasks = [], usesTime = false }) => {
           subCategories={subCategories}
           searchFilter={searchFilter}
           setSearchFilter={setSearchFilter}
+          showNonCurrentTasks={showNonCurrentTasks}
+          setShowNonCurrentTasks={setShowNonCurrentTasks}
         />
       )}
     </motion.div>
