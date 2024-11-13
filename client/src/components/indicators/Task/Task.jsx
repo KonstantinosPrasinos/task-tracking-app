@@ -37,12 +37,6 @@ const RepeatDetails = memo(({ task }) => {
           {task.goal?.number && <>/ {task.goal?.number}</>}
         </div>
       )}
-      {task.type === "Number" && task.goal?.number && (
-        <div>
-          <TbTargetArrow />
-          <TextSwitchContainer>{task.goal?.number}</TextSwitchContainer>
-        </div>
-      )}
       {task.type === "Number" && task.longGoal?.type && (
         <div className={styles.repeatSeparator}>|</div>
       )}
