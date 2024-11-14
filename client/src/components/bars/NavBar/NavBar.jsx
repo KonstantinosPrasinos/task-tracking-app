@@ -67,22 +67,21 @@ const NavBar = () => {
             <motion.div className={styles.selectedBar} layoutId={"underline"} />
           )}
         </div>
-        <div className={styles.item}>
-          <IconButton
-            onClick={() =>
-              componentCommunicationContext.dispatch({
-                type: "SET_SEARCH_SCREEN_VISIBLE",
-                payload: true,
-              })
-            }
-            selected={selected === "search"}
-          >
-            <TbSearch />
-          </IconButton>
-          {selected === "settings" && (
-            <motion.div className={styles.selectedBar} layoutId={"underline"} />
-          )}
-        </div>
+        {screenSize === "small" && (
+          <div className={styles.item}>
+            <IconButton
+              onClick={() =>
+                componentCommunicationContext.dispatch({
+                  type: "SET_SEARCH_SCREEN_VISIBLE",
+                  payload: true,
+                })
+              }
+              selected={selected === "search"}
+            >
+              <TbSearch />
+            </IconButton>
+          </div>
+        )}
         <div className={styles.item}>
           <IconButton
             onClick={() => navigate("/settings", { replace: true })}
