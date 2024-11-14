@@ -36,7 +36,7 @@
   .categoryChipContainer {
     padding: 4px;
     overflow: hidden;
-    max-width: 12.5em;
+    max-width: 15rem;
     max-height: 100%;
   }
 
@@ -249,7 +249,7 @@
   width: 100%;
 
   & > :first-child {
-    opacity: v.$opacity-low;
+    opacity: v.$opacity-very-low;
     flex-shrink: 0;
   }
 
@@ -261,7 +261,7 @@
   }
 
   &.standalone {
-    width: 10em; // 12.5 * 0.8
+    width: 15rem; // 12.5 * 0.8
     box-sizing: border-box
   }
 }
@@ -302,6 +302,12 @@
 @keyframes appearAnimation {
   0% {opacity: 0;}
   100% {opacity: 1;}
+}
+
+.searchTextInput:placeholder-shown + .searchEraser {
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
 }
 
 .searchEraser {

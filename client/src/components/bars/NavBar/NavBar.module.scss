@@ -79,3 +79,10 @@
   align-items: center;
   justify-content: center;
 }
+
+.filterCounter {
+  opacity: v.$opacity-very-low;
+  position: absolute;
+  top: 2em;
+  font-size: 12px;
+}
