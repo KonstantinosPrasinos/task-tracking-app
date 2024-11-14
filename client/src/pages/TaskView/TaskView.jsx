@@ -21,7 +21,6 @@ import { useDeleteEntry } from "../../hooks/delete-hooks/useDeleteEntry";
 import TextButton from "../../components/buttons/TextButton/TextButton";
 import { useChangeEntry } from "../../hooks/change-hooks/useChangeEntry";
 import ToggleButton from "../../components/buttons/ToggleButton/ToggleButton";
-import { UndoContext } from "../../context/UndoContext";
 import { useGetSettings } from "../../hooks/get-hooks/useGetSettings";
 import { useChangeSettings } from "../../hooks/change-hooks/useChangeSettings";
 import Table from "@/components/utilities/Table/Table.jsx";
@@ -543,7 +542,6 @@ const ConfirmDeleteModal = ({
 
 const TaskView = ({ index, length, task }) => {
   const miniPagesContext = useContext(MiniPagesContext);
-  const undoContext = useContext(UndoContext);
 
   const { mutate: deleteTask } = useDeleteTask();
   const { mutate: setTaskCurrentEntry } = useChangeEntryValue(task?.title);
@@ -585,10 +583,6 @@ const TaskView = ({ index, length, task }) => {
 
   const handleDelete = () => {
     miniPagesContext.dispatch({ type: "REMOVE_PAGE", payload: "" });
-    undoContext.dispatch({
-      type: "ADD_UNDO",
-      payload: { type: "task", id: task?._id },
-    });
     deleteTask(task?._id);
   };
 
