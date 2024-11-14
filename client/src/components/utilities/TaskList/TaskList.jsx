@@ -42,12 +42,14 @@ const CategoryChips = ({
         .map((tempCategory) => tempCategory._id)
         .includes(category._id)
     ) {
-      setCategoryFilter((current) =>
-        current.filter((tempCategory) => tempCategory._id != category._id),
+      setCategoryFilter(
+        categoryFilter.filter(
+          (tempCategory) => tempCategory._id != category._id,
+        ),
       );
     } else {
-      setCategoryFilter((current) => [
-        ...current,
+      setCategoryFilter([
+        ...categoryFilter,
         { ...category, selectedSubcategories: [] },
       ]);
     }
@@ -59,8 +61,8 @@ const CategoryChips = ({
     );
 
     if (subcategoryParent.selectedSubcategories.includes(subcategory)) {
-      setCategoryFilter((current) =>
-        current.map((tempCategory) =>
+      setCategoryFilter(
+        categoryFilter.map((tempCategory) =>
           tempCategory._id != subcategoryParent._id
             ? tempCategory
             : {
@@ -74,8 +76,8 @@ const CategoryChips = ({
         ),
       );
     } else {
-      setCategoryFilter((current) =>
-        current.map((tempCategory) =>
+      setCategoryFilter(
+        categoryFilter.map((tempCategory) =>
           tempCategory._id != subcategoryParent._id
             ? tempCategory
             : {
@@ -231,12 +233,12 @@ const BigScreenFilters = ({
 
   const toggleNoCategory = () => {
     if (categoryFilter.find((category) => category._id === "-1")) {
-      setCategoryFilter((current) =>
-        current.filter((tempCategory) => tempCategory._id != "-1"),
+      setCategoryFilter(
+        categoryFilter.filter((tempCategory) => tempCategory._id != "-1"),
       );
     } else {
-      setCategoryFilter((current) => [
-        ...current,
+      setCategoryFilter([
+        ...categoryFilter,
         { _id: "-1", selectedSubcategories: [] },
       ]);
     }
@@ -346,12 +348,12 @@ const SearchScreen = ({
 
   const toggleNoCategory = () => {
     if (categoryFilter.find((category) => category._id === "-1")) {
-      setCategoryFilter((current) =>
-        current.filter((tempCategory) => tempCategory._id != "-1"),
+      setCategoryFilter(
+        categoryFilter.filter((tempCategory) => tempCategory._id != "-1"),
       );
     } else {
-      setCategoryFilter((current) => [
-        ...current,
+      setCategoryFilter([
+        ...categoryFilter,
         { _id: "-1", selectedSubcategories: [] },
       ]);
     }
@@ -453,7 +455,6 @@ const TaskList = ({
   showNonCurrentTasks = false,
   setShowNonCurrentTasks = () => {},
 }) => {
-  const [categoryFilter, setCategoryFilter] = useState([]);
   const { data: categories } = useGetCategories();
   const { data: subCategories } = useGetGroups();
   const leftRef = useRef();
@@ -464,14 +465,25 @@ const TaskList = ({
     ComponentCommunicationContext,
   );
 
+  const setCategoryFilter = (value) => {
+    componentCommunicationContext.dispatch({
+      type: "SET_TASK_FILTERS",
+      payload: value,
+    });
+  };
+
   const filteredTasks = useMemo(() => {
-    if (categoryFilter.length == 0 && searchFilter.length === 0) return tasks;
+    if (
+      componentCommunicationContext.state.filters.length == 0 &&
+      searchFilter.length === 0
+    )
+      return tasks;
 
     return tasks.reduce((reducedTasks, currentTask) => {
       if (currentTask.hasOwnProperty("tasks")) {
         const matchesCategory =
-          categoryFilter.length === 0 ||
-          categoryFilter.find(
+          componentCommunicationContext.state.filters.length === 0 ||
+          componentCommunicationContext.state.filters.find(
             (tempFilter) => tempFilter._id === currentTask.tasks[0].category,
           );
 
@@ -504,8 +516,10 @@ const TaskList = ({
       } else {
         // _id of -1 is for when the "no category" option is selected. Then show all tasks with no category
         const showNoCategory =
-          categoryFilter.length === 0 ||
-          categoryFilter.some((category) => category._id === "-1");
+          componentCommunicationContext.state.filters.length === 0 ||
+          componentCommunicationContext.state.filters.some(
+            (category) => category._id === "-1",
+          );
 
         const matchesSearch =
           searchFilter.length === 0 ||
@@ -516,7 +530,7 @@ const TaskList = ({
 
       return reducedTasks;
     }, []);
-  }, [categoryFilter, tasks, searchFilter]);
+  }, [componentCommunicationContext.state.filters, tasks, searchFilter]);
 
   const toggleSearchVisibility = () => {
     componentCommunicationContext.dispatch({
@@ -537,7 +551,7 @@ const TaskList = ({
         <AnimatePresence>
           {componentCommunicationContext.state.searchScreenVisible && (
             <SearchScreen
-              categoryFilter={categoryFilter}
+              categoryFilter={componentCommunicationContext.state.filters}
               setCategoryFilter={setCategoryFilter}
               categories={categories}
               subCategories={subCategories}
@@ -590,7 +604,7 @@ const TaskList = ({
       </motion.div>
       {screenSize !== "small" && (
         <BigScreenFilters
-          categoryFilter={categoryFilter}
+          categoryFilter={componentCommunicationContext.state.filters}
           setCategoryFilter={setCategoryFilter}
           categories={categories}
           subCategories={subCategories}

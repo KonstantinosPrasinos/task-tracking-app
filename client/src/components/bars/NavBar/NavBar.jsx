@@ -80,6 +80,20 @@ const NavBar = () => {
             >
               <TbSearch />
             </IconButton>
+            {componentCommunicationContext.state.filters.length > 0 && (
+              <div
+                className={styles.filterCounter}
+                style={{
+                  right:
+                    -(
+                      componentCommunicationContext.state.filters.length.toString()
+                        .length - 1
+                    ) * 2,
+                }}
+              >
+                {componentCommunicationContext.state.filters.length}
+              </div>
+            )}
           </div>
         )}
         <div className={styles.item}>
