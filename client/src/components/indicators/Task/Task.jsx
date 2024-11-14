@@ -16,6 +16,7 @@ import { useGetTaskCurrentEntry } from "@/hooks/get-hooks/useGetTaskCurrentEntry
 import TextSwitchContainer from "@/components/containers/TextSwitchContainer/TextSwitchContainer";
 import { TbCheck } from "react-icons/tb";
 import IconButton from "@/components/buttons/IconButton/IconButton";
+import { checkTaskCompleted } from "@/functions/checkTaskCompleted.js";
 
 const RepeatDetails = memo(({ task }) => {
   const { data: entry, isLoading } = useGetTaskCurrentEntry(
@@ -67,6 +68,33 @@ const RepeatDetails = memo(({ task }) => {
     </div>
   );
 });
+
+const TaskRow = ({ task, handleTaskClick }) => {
+  const { data: entry, isLoading: entryLoading } = useGetTaskCurrentEntry(
+    task._id,
+    task.currentEntryId,
+  );
+
+  const taskCompleted = useMemo(
+    () => checkTaskCompleted(task, entry),
+    [task, entry, entryLoading],
+  );
+
+  return (
+    <motion.div
+      key={task._id}
+      className={`${styles.task} ${taskCompleted ? styles.taskCompleted : ""}`}
+      onClick={() => handleTaskClick(task._id)}
+      exit={{ opacity: 0, height: 0, padding: 0 }}
+    >
+      <div className={styles.detailsList}>
+        <div className={styles.titleContainer}>{task.title}</div>
+        <RepeatDetails task={task} />
+      </div>
+      <CurrentProgress key={task._id} task={task} />
+    </motion.div>
+  );
+};
 
 const variants = {
   hidden: { opacity: 0, y: 50 /*scale: 0.8, */ },
@@ -133,18 +161,11 @@ const Task = memo(
           <div className={styles.tasksContainer}>
             <AnimatePresence>
               {tasks.map((task) => (
-                <motion.div
+                <TaskRow
+                  task={task}
+                  handleTaskClick={handleTaskClick}
                   key={task._id}
-                  className={styles.task}
-                  onClick={() => handleTaskClick(task._id)}
-                  exit={{ opacity: 0, height: 0, padding: 0 }}
-                >
-                  <div className={styles.detailsList}>
-                    <div className={styles.titleContainer}>{task.title}</div>
-                    <RepeatDetails task={task} />
-                  </div>
-                  <CurrentProgress key={task._id} task={task} />
-                </motion.div>
+                />
               ))}
             </AnimatePresence>
           </div>

@@ -73,6 +73,12 @@
   &:last-child:not(:only-child)  {
     padding-top: 6px;
   }
+
+  &.taskCompleted {
+    & > * {
+      opacity: v.$opacity-very-low !important;
+    }
+  }
 }
 
 .detailsList {

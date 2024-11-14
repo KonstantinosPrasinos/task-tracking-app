@@ -25,8 +25,6 @@ import { UserContext } from "./context/UserContext";
 import { useGetSettings } from "./hooks/get-hooks/useGetSettings";
 import { updateUserValidDate } from "./functions/updateUserValidDate";
 import "react-day-picker/dist/style.css";
-import UndoContextProvider from "./context/UndoContext";
-import UndoHandler from "./components/handlers/UndoHandler/UndoHandler";
 import { useGetTasks } from "@/hooks/get-hooks/useGetTasks";
 import { useGetGroups } from "@/hooks/get-hooks/useGetGroups";
 import { useGetCategories } from "@/hooks/get-hooks/useGetCategories";
@@ -254,14 +252,13 @@ const NavLayout = () => {
   }
 
   return (
-    <UndoContextProvider>
+    <>
       <NavBar />
       <MiniPagesHandler />
-      <UndoHandler />
       <div className="Content-Container">
         <Outlet />
       </div>
-    </UndoContextProvider>
+    </>
   );
 };
 const ProtectedLayout = () => {
