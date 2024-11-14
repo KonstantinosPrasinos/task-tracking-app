@@ -1,20 +1,15 @@
 import React, { useContext, useMemo, useRef, useState } from "react";
 import styles from "./TaskList.module.scss";
-import { AnimatePresence, motion, useAnimate } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Task from "@/components/indicators/Task/Task.jsx";
 import Chip from "@/components/buttons/Chip/Chip";
 import { useGetCategories } from "@/hooks/get-hooks/useGetCategories";
-import {
-  TbChevronCompactDown,
-  TbEraser,
-  TbPlus,
-  TbSearch,
-  TbX,
-} from "react-icons/tb";
+import { TbEraser, TbPlus, TbSearch, TbX } from "react-icons/tb";
 import Button from "@/components/buttons/Button/Button";
 import { MiniPagesContext } from "@/context/MiniPagesContext";
 import { useGetGroups } from "@/hooks/get-hooks/useGetGroups";
 import { useScreenSize } from "@/hooks/useScreenSize";
+import { ComponentCommunicationContext } from "@/context/ComponentCommunicationContext.jsx";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -328,7 +323,6 @@ const SearchBar = ({ isStandalone = false, searchFilter, setSearchFilter }) => {
 };
 
 const SearchScreen = ({
-  searchBarRef,
   categoryFilter,
   setCategoryFilter,
   categories,
@@ -340,7 +334,6 @@ const SearchScreen = ({
   setShowNonCurrentTasks,
 }) => {
   const miniPagesContext = useContext(MiniPagesContext);
-  const [searchFocused, setSearchFocused] = useState();
 
   const toggleNoCategory = () => {
     if (categoryFilter.find((category) => category._id === "-1")) {
@@ -425,7 +418,6 @@ const SearchScreen = ({
         </motion.div>
       )}
       <motion.div
-        ref={searchBarRef}
         className={styles.searchBar}
         initial={{ opacity: 0, y: 100 }}
         animate={{ opacity: 1, y: 0 }}
@@ -446,8 +438,6 @@ const SearchScreen = ({
   );
 };
 
-const maxDragDistance = 150;
-
 const TaskList = ({
   tasks = [],
   usesTime = false,
@@ -458,11 +448,12 @@ const TaskList = ({
   const { data: categories } = useGetCategories();
   const { data: subCategories } = useGetGroups();
   const leftRef = useRef();
-  const dragStartPosition = useRef();
-  const [searchBarRef, animateSearchBar] = useAnimate();
-  const [searchVisible, setSearchVisible] = useState(false);
   const { screenSize } = useScreenSize();
   const [searchFilter, setSearchFilter] = useState("");
+
+  const componentCommunicationContext = useContext(
+    ComponentCommunicationContext,
+  );
 
   const filteredTasks = useMemo(() => {
     if (categoryFilter.length == 0 && searchFilter.length === 0) return tasks;
@@ -518,68 +509,11 @@ const TaskList = ({
     }, []);
   }, [categoryFilter, tasks, searchFilter]);
 
-  const handleTouchStart = (event) => {
-    if (leftRef.current.scrollTop === 0) {
-      dragStartPosition.current = event.touches[0].clientY;
-    }
-  };
-
-  const handleTouchMove = (event) => {
-    if (
-      leftRef.current.scrollTop === 0 &&
-      dragStartPosition.current &&
-      event.touches[0].clientY > dragStartPosition.current
-    ) {
-      if (!searchVisible) {
-        setSearchVisible(true);
-      }
-
-      if (
-        searchBarRef.current &&
-        // !searchExpanded &&
-        dragStartPosition.current
-      ) {
-        if (
-          event.touches[0].clientY - dragStartPosition.current <
-          maxDragDistance
-        ) {
-          const animationPercentage =
-            (event.touches[0].clientY - dragStartPosition.current) /
-            maxDragDistance;
-
-          searchBarRef.current.style.opacity = animationPercentage / 2;
-          searchBarRef.current.style.top = `${animationPercentage * 3 - 2}em`;
-        } else {
-          // if (!searchExpanded) {
-          //   setSearchExpanded(true);
-          //   animateSearchBar(searchBarRef.current, {
-          //     opacity: 1,
-          //     top: "1em",
-          //   });
-          // }
-        }
-      }
-    }
-  };
-
-  const handleTouchEnd = () => {
-    dragStartPosition.current = null;
-    // if (!searchExpanded && searchBarRef.current) {
-    //   animateSearchBar(
-    //     searchBarRef.current,
-    //     {
-    //       opacity: 0,
-    //       top: "-2em",
-    //     },
-    //     {
-    //       onComplete: () => toggleSearchVisibility(),
-    //     },
-    //   );
-    // }
-  };
-
   const toggleSearchVisibility = () => {
-    setSearchVisible(!searchVisible);
+    componentCommunicationContext.dispatch({
+      type: "SET_SEARCH_SCREEN_VISIBLE",
+      payload: !componentCommunicationContext.state.searchScreenVisible,
+    });
   };
 
   return (
@@ -592,9 +526,8 @@ const TaskList = ({
     >
       {screenSize === "small" && (
         <AnimatePresence>
-          {searchVisible && (
+          {componentCommunicationContext.state.searchScreenVisible && (
             <SearchScreen
-              searchBarRef={searchBarRef}
               categoryFilter={categoryFilter}
               setCategoryFilter={setCategoryFilter}
               categories={categories}
@@ -610,26 +543,12 @@ const TaskList = ({
       )}
       <motion.div
         className={`Stack-Container ${styles.leftSide}`}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
         ref={leftRef}
       >
         {/*
                 Animate Presence is needed here to set initial to true.
                 Otherwise, the stagger doesn't work on list view because of the switch container.
             */}
-        {screenSize === "small" && (
-          <button
-            className={styles.searchIndicatorBar}
-            onClick={toggleSearchVisibility}
-          >
-            <TbSearch />
-            <div className={styles.chevronContainer}>
-              <TbChevronCompactDown />
-            </div>
-          </button>
-        )}
         <AnimatePresence initial={true} mode="popLayout">
           {filteredTasks.length === 0 && (
             <motion.div

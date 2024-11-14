@@ -6,6 +6,7 @@ import UserContextProvider from "./context/UserContext";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClientProvider, QueryClient } from "react-query";
 import { createRoot } from "react-dom/client";
+import ComponentCommunicationContextProvider from "@/context/ComponentCommunicationContext.jsx";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { networkMode: "offlineFirst" } },
@@ -19,11 +20,13 @@ root.render(
   <AlertsContextProvider>
     <MiniPagesContextProvider>
       <UserContextProvider>
-        <BrowserRouter>
-          <QueryClientProvider client={queryClient}>
-            <App />
-          </QueryClientProvider>
-        </BrowserRouter>
+        <ComponentCommunicationContextProvider>
+          <BrowserRouter>
+            <QueryClientProvider client={queryClient}>
+              <App />
+            </QueryClientProvider>
+          </BrowserRouter>
+        </ComponentCommunicationContextProvider>
       </UserContextProvider>
     </MiniPagesContextProvider>
   </AlertsContextProvider>,

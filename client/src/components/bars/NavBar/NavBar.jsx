@@ -3,12 +3,13 @@ import { useContext, useEffect, useState } from "react";
 import styles from "./NavBar.module.scss";
 import IconButton from "../../buttons/IconButton/IconButton";
 import Button from "../../buttons/Button/Button";
-import { TbHome, TbList, TbPlus, TbSettings } from "react-icons/tb";
+import { TbHome, TbPlus, TbSearch, TbSettings } from "react-icons/tb";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MiniPagesContext } from "../../../context/MiniPagesContext";
 import { motion } from "framer-motion";
 import { useScreenSize } from "@/hooks/useScreenSize";
 import ConnectionBadges from "@/components/utilities/ConnectionBadges/ConnectionBadges";
+import { ComponentCommunicationContext } from "@/context/ComponentCommunicationContext.jsx";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -18,6 +19,9 @@ const NavBar = () => {
   const [selected, setSelected] = useState(null);
 
   const miniPagesContext = useContext(MiniPagesContext);
+  const componentCommunicationContext = useContext(
+    ComponentCommunicationContext,
+  );
 
   useEffect(() => {
     switch (location.pathname) {
@@ -60,6 +64,22 @@ const NavBar = () => {
             <TbHome />
           </IconButton>
           {selected === "home" && (
+            <motion.div className={styles.selectedBar} layoutId={"underline"} />
+          )}
+        </div>
+        <div className={styles.item}>
+          <IconButton
+            onClick={() =>
+              componentCommunicationContext.dispatch({
+                type: "SET_SEARCH_SCREEN_VISIBLE",
+                payload: true,
+              })
+            }
+            selected={selected === "search"}
+          >
+            <TbSearch />
+          </IconButton>
+          {selected === "settings" && (
             <motion.div className={styles.selectedBar} layoutId={"underline"} />
           )}
         </div>
