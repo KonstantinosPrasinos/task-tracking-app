@@ -314,10 +314,19 @@ const SearchBar = ({ isStandalone = false, searchFilter, setSearchFilter }) => {
     >
       <TbSearch />
       <input
+        className={styles.searchTextInput}
         placeholder="Search"
         value={searchFilter}
         onChange={handleChange}
       ></input>
+      {isStandalone && (
+        <button
+          className={styles.searchEraser}
+          onClick={() => setSearchFilter("")}
+        >
+          <TbEraser />
+        </button>
+      )}
     </div>
   );
 };
