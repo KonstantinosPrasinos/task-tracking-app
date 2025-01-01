@@ -7,17 +7,21 @@ import TaskView from "../../../pages/TaskView/TaskView";
 import CategoryView from "../../../pages/CategoryView/CategoryView";
 import { useGetTasks } from "../../../hooks/get-hooks/useGetTasks";
 import { useGetCategories } from "../../../hooks/get-hooks/useGetCategories";
-
+import { useLocation, useNavigate } from "react-router-dom";
 const MiniPagesHandler = () => {
   const miniPagesContext = useContext(MiniPagesContext);
   const { isLoading: tasksLoading, data: tasks } = useGetTasks();
   const { isLoading: categoriesLoading, data: categories } = useGetCategories();
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const renderPage = (page, index) => {
     if (tasksLoading || categoriesLoading) return "";
 
     switch (page.type) {
       case "new-task":
+        // navigate(`${location.pathname}/new-task`);
         return (
           <NewTask
             key={index}
@@ -27,6 +31,7 @@ const MiniPagesHandler = () => {
           />
         );
       case "new-category":
+        // window.history.pushState(null, "New task", "/new-category");
         return (
           <NewCategory
             key={index}

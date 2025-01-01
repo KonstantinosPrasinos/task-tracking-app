@@ -362,9 +362,13 @@ function App() {
         <Route element={<ProtectedLayout />}>
           <Route element={<NavLayout />}>
             <Route exact path="/" element={<Home />} />
-            <Route exact path="/home" element={<Navigate to="/" />} />
+            <Route exact path="/home" element={<Navigate to="/" />}>
+              <Route path="new-task" />
+            </Route>
             <Route path="/list" element={<ListView />} />
-            <Route path="/settings" element={<Settings />} />
+            <Route path="/settings" element={<Settings />}>
+              <Route path="new-task" />
+            </Route>
           </Route>
         </Route>
         <Route exact path="/change-email" element={<ChangeEmail />} />
