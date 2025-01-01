@@ -2,6 +2,8 @@
 @use '@/styles/index' as i;
 @use '@/styles/mixins' as m;
 
+
+
 .container {
   display: inline-flex;
   position: relative;
@@ -39,6 +41,10 @@
   white-space: pre-wrap;
   line-height: 1.25em;
   opacity: 0.9;
+
+  @media (max-width: v.$phone-breakpoint) {
+    font-size: v.$font-l;
+  }
 }
 
 .infoContainer {
@@ -66,12 +72,12 @@
   width: 100%;
 
   &:not(:last-child) {
-    padding: 6px 0;
-    border-bottom: v.$base-border;
+    padding: 10px 0;
+    //border-bottom: v.$base-border;
   }
 
   &:last-child:not(:only-child)  {
-    padding-top: 6px;
+    padding-top: 10px;
   }
 
   &.taskCompleted {
@@ -123,6 +129,7 @@
 .expandButton {
   display: flex;
   align-items: center;
+  justify-content: center;
   transition: transform 0.2s ease-in-out;
   opacity: v.$opacity-low;
 }

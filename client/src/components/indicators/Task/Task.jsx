@@ -17,6 +17,7 @@ import TextSwitchContainer from "@/components/containers/TextSwitchContainer/Tex
 import { TbCheck } from "react-icons/tb";
 import IconButton from "@/components/buttons/IconButton/IconButton";
 import { checkTaskCompleted } from "@/functions/checkTaskCompleted.js";
+import { useScreenSize } from "@/hooks/useScreenSize.js";
 
 const RepeatDetails = memo(({ task }) => {
   const { data: entry, isLoading } = useGetTaskCurrentEntry(
@@ -96,20 +97,30 @@ const TaskRow = ({ task, handleTaskClick }) => {
   );
 };
 
-const variants = {
-  hidden: { opacity: 0, y: 50 /*scale: 0.8, */ },
-  expanded: { opacity: 1, y: 0, /*scale: 1, */ height: "auto" },
-  collapsed: { opacity: 1, y: 0, /*scale: 1, */ height: 14 * 1.2 + 8 + 20 },
-  exit: {
-    opacity: 0,
-    scale: 0.5,
-  },
-};
-
 const Task = memo(
   forwardRef(({ tasks }, ref) => {
     const miniPagesContext = useContext(MiniPagesContext);
     const [isExpanded, setIsExpanded] = useState(true);
+    const { screenSize } = useScreenSize();
+
+    console.log(screenSize);
+
+    const variants = useMemo(() => {
+      return {
+        hidden: { opacity: 0, y: 50 /*scale: 0.8, */ },
+        expanded: { opacity: 1, y: 0, /*scale: 1, */ height: "auto" },
+        collapsed: {
+          opacity: 1,
+          y: 0,
+          /*scale: 1, */ height:
+            screenSize === "small" ? 16 * 1.2 + 10 + 20 : 14 * 1.2 + 8 + 20,
+        },
+        exit: {
+          opacity: 0,
+          scale: 0.5,
+        },
+      };
+    }, [screenSize]);
 
     const handleTaskClick = useCallback((taskId) => {
       miniPagesContext.dispatch({
