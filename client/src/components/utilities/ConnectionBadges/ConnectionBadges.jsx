@@ -108,20 +108,21 @@ const ConnectionBadges = () => {
   return (
     <div className={styles.container}>
       <AnimatePresence>
-        {(tasksSyncing ||
-          categoriesSyncing ||
-          groupsSyncing ||
-          changesSyncing) && (
-          <motion.div
-            className={styles.syncingBadge}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.3 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
-          >
-            <TbRefresh />
-          </motion.div>
-        )}
+        {/*{(true ||*/}
+        {/*  tasksSyncing ||*/}
+        {/*  categoriesSyncing ||*/}
+        {/*  groupsSyncing ||*/}
+        {/*  changesSyncing) && (*/}
+        {/*  <motion.div*/}
+        {/*    className={styles.syncingBadge}*/}
+        {/*    initial={{ opacity: 0 }}*/}
+        {/*    animate={{ opacity: 0.3 }}*/}
+        {/*    exit={{ opacity: 0 }}*/}
+        {/*    transition={{ duration: 0.1 }}*/}
+        {/*  >*/}
+        {/*    <TbRefresh />*/}
+        {/*  </motion.div>*/}
+        {/*)}*/}
         {isOffline && (
           <motion.div
             className={styles.offlineBadge}

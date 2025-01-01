@@ -9,6 +9,11 @@
   max-width: 100%;
   width: min-content;
   transform: none !important;
+
+  @media (max-width: v.$phone-breakpoint) {
+    font-size: v.$font-m;
+    padding: 5px 8px;
+  }
 }
 
 .text {
